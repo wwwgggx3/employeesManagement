@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.comtruetech.managementprogram.admin.AdminMapper">
+    <insert id="insEmployee">
+        INSERT INTO t_employees
+        SET
+            title_id = #{titleId},
+            nm = #{nm},
+            tel = #{tel},
+            email = #{email}
+    </insert>
+
+    <update id="updEmployee">
+        UPDATE t_employees
+        SET
+            title_id = #{titleId},
+            nm = #{nm},
+            tel = #{tel},
+            email = #{email}
+        WHERE employee_id = #{employeeId}
+    </update>
+
+    <update id="delEmployee">
+        UPDATE t_employees
+        SET
+        del_yn = 1
+        WHERE employee_id = #{employeeId}
+    </update>
+
+    <select id="selEmployees">
+        SELECT LPAD(A.employee_id, '3', '0') employeeId, B.nm titleNm, A.nm, A.tel, A.email
+        FROM t_employees A
+        INNER JOIN t_title B
+        ON A.title_id = B.title_id
+        WHERE A.del_yn = 0
+        ORDER BY A.nm
+        LIMIT #{startIdx}, #{row}
+    </select>
+
+    <select id="EmployeesCount">
+        SELECT COUNT(*) count
+        FROM t_employees A
+        INNER JOIN t_title B
+        ON A.title_id = B.title_id
+    </select>
+
+    <select id="serchEmployees">
+        SELECT LPAD(A.employee_id, '3', '0') employeeId, B.nm titleNm, A.nm, A.tel, A.email
+        FROM t_employees A
+        INNER JOIN t_title B
+        ON A.title_id = B.title_id
+        WHERE
+        <choose>
+            <when test="type == 1">
+                A.employee_id LIKE #{ctnt} AND A.del_yn = 0
+            </when>
+            <when test="type == 2">
+                B.title_id LIKE #{ctnt} AND A.del_yn = 0
+            </when>
+            <when test="type == 3">
+                A.nm LIKE '%#{ctnt}%' AND A.del_yn = 0
+            </when>
+            <when test="type == 4">
+                A.tel LIKE '%#{ctnt}%' AND A.del_yn = 0
+            </when>
+            <when test="type == 5">
+                A.email LIKE '%#{ctnt}%' AND A.del_yn = 0
+            </when>
+        </choose>
+        ORDER BY A.nm
+        LIMIT #{startIdx}, #{row}
+    </select>
+
+</mapper>
